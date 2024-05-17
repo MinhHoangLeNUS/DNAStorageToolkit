@@ -135,14 +135,17 @@ void q_gram_seq_generator(int length, string curr){
   }
 }
 
+//temp_gram_string is the Q_GRAM_STRAND_SIZE binary signature of string s
 inline void q_gram_string(const string & s , int offset , bitset<Q_GRAM_STRAND_SIZE> &temp_gram_string){
   if(DEBUG) assert(s.size() <= block_size);
   if(s.size() < gram_size) return;
   unordered_set<string> block_grams;
   string gram;
+  //initialize gram = {s[0], s[1]}. gram_size = 3
   for(int i = 0; i < gram_size-1 ; ++i){
     gram.push_back(s[i]);
   }
+  //block_grams includes unique size-3 substrings of s
   for(int i = gram_size-1 , len = s.size() ; i < len ; ++i){
     gram.push_back(s[i]);
     block_grams.insert(gram);
@@ -150,13 +153,15 @@ inline void q_gram_string(const string & s , int offset , bitset<Q_GRAM_STRAND_S
   }
   if(DEBUG) assert(gram.size() == gram_size-1);
   for(int i = 0, len = all_q_gram_sequences.size() ; i < len ; ++i){
-    if(offset*len+i >= Q_GRAM_STRAND_SIZE){
+    //block_size = 20
+    if(offset*len+i >= Q_GRAM_STRAND_SIZE){ //check overflow
       cout << "Change the variable Q_GRAM_STRAND_SIZE to: " << 2*strand_length*all_q_gram_sequences.size()/block_size << endl;
       exit(EXIT_FAILURE);
     }
-    temp_gram_string[offset*len+i] = (block_grams.find(all_q_gram_sequences[i]) != block_grams.end()); 
+    temp_gram_string[offset*len+i] = (block_grams.find(all_q_gram_sequences[i]) != block_grams.end()); //only works when setting q = 3
   }
 }
+
 inline void q_gram_sequence(int idx){
   string s = pool[idx];
   bitset<Q_GRAM_STRAND_SIZE> temp_gram_string;
@@ -177,6 +182,8 @@ inline void q_gram_sequence(int idx){
   assert(idx < pool.size());
   q_gram_dict[idx] = temp_gram_string;
 }
+
+
 void *q_gram_thread(void *args){
   pair<int, int> *info = static_cast<pair<int,int> *>(args);
   int start_index = (*info).first , length = (*info).second;
