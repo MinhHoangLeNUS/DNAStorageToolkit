@@ -162,25 +162,31 @@ inline void q_gram_string(const string & s , int offset , bitset<Q_GRAM_STRAND_S
   }
 }
 
+//Evaluate and save q_gram_dict[idx]: Q_GRAM_STRAND_SIZE binary signature of the strand indexed idx in pool
 inline void q_gram_sequence(int idx){
-  string s = pool[idx];
+  string s = pool[idx]; //pool of strands
   bitset<Q_GRAM_STRAND_SIZE> temp_gram_string;
+  //block_size = 20
   string substr_block(block_size , ' ');
+
+  //Dividing strand s into size20 consecutive substring_blocks and calling q_gram_string function for each blocks.
+  //Bitsets resulting from blocks will be arranged consecutively in temp_gram_string 
   int i, j = 0, cnt = 0, len;
   for(i = 0, len= s.length();  i < len ; ++i ){
-    substr_block[j++] = s[i];
+    substr_block[j++] = s[i]; 
     if(j == block_size){
       q_gram_string(substr_block , cnt , temp_gram_string); 
       j = 0;
       ++cnt;
     }
   }
+  //handling for incomplete block
   if(j != 0){
     substr_block.resize(j);
     q_gram_string(substr_block, cnt , temp_gram_string);
   }
   assert(idx < pool.size());
-  q_gram_dict[idx] = temp_gram_string;
+  q_gram_dict[idx] = temp_gram_string; 
 }
 
 
@@ -192,6 +198,8 @@ void *q_gram_thread(void *args){
   }
   pthread_exit(NULL);
 }
+
+
 void create_q_gram_dict(){
   if(pool.size() == 0) return;
   int num_thread = min(max_num_thread , (int)pool.size());
