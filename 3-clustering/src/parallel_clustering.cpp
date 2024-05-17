@@ -11,7 +11,7 @@ using namespace __gnu_pbds;
 ofstream debug;
 int q_gram_count;
 int edit_dist_count;
-vector<char> iterable;
+vector<char> iterable; //{A, G, C, T}
 int strand_length;
 int num_underlying_strands;
 float remerging_edit_dis_threshold; 
@@ -116,6 +116,7 @@ inline int random_no(){
   return pcg32();
 }
 
+//Generate q_gram sequences (but not ALL) and save in all_q_gram_sequences
 void q_gram_seq_generator(int length, string curr){
   if(length == 0){
     all_q_gram_sequences.push_back(curr);
@@ -133,6 +134,7 @@ void q_gram_seq_generator(int length, string curr){
     }
   }
 }
+
 inline void q_gram_string(const string & s , int offset , bitset<Q_GRAM_STRAND_SIZE> &temp_gram_string){
   if(DEBUG) assert(s.size() <= block_size);
   if(s.size() < gram_size) return;
