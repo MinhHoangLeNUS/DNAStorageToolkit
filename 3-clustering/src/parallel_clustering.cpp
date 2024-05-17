@@ -86,7 +86,7 @@ pthread_mutex_t mutex1;
 //since qram_size is small this will suffice
 
 /*
-uint32_t: unsigned integer
+uint32_t: unsigned 32bit integer
 bits right_rotation. e.g x = a..b c..d (chars in {0, 1})
                              32-r  r
                   return c..d a..b 
@@ -95,7 +95,7 @@ static uint32_t rotr32(uint32_t x, unsigned r){
     return x >> r | x << (-r & 31); // (-r & 31) = 32 - r
 }
 
-
+//generate and return a random unsigned 32bit integer using pcg algorithm
 uint32_t pcg32(void){
     uint64_t x = state;
     unsigned count = (unsigned)(x >> 59);
@@ -103,10 +103,15 @@ uint32_t pcg32(void){
     x ^= x >> 18;                  
     return rotr32((uint32_t)(x >> 27), count);  // 27 = 32 - 5
 }
+
+//initialization for generating random numbers
 void pcg32_init(uint64_t seed){
-    state = seed + increment;
+    state = seed + increment; //ensures non-zero initial state
     (void)pcg32();
 }
+
+//directly returns next random number in the sequence
+//inline function is a function that expanded in line when it is called. It may increase efficiency 
 inline int random_no(){
   return pcg32();
 }
