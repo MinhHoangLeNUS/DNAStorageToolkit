@@ -85,10 +85,17 @@ vector<int> wrongEle;
 pthread_mutex_t mutex1;
 //since qram_size is small this will suffice
 
-
+/*
+uint32_t: unsigned integer
+bits right_rotation. e.g x = a..b c..d (chars in {0, 1})
+                             32-r  r
+                  return c..d a..b 
+*/
 static uint32_t rotr32(uint32_t x, unsigned r){
-    return x >> r | x << (-r & 31);
+    return x >> r | x << (-r & 31); // (-r & 31) = 32 - r
 }
+
+
 uint32_t pcg32(void){
     uint64_t x = state;
     unsigned count = (unsigned)(x >> 59);
