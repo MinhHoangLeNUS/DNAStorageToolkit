@@ -189,7 +189,7 @@ inline void q_gram_sequence(int idx){
   q_gram_dict[idx] = temp_gram_string; 
 }
 
-
+//Calling q_gram_sequence for all strands in a thread
 void *q_gram_thread(void *args){
   pair<int, int> *info = static_cast<pair<int,int> *>(args);
   int start_index = (*info).first , length = (*info).second;
@@ -199,7 +199,7 @@ void *q_gram_thread(void *args){
   pthread_exit(NULL);
 }
 
-
+//Multithreading function for generating q-gram dictionary 
 void create_q_gram_dict(){
   if(pool.size() == 0) return;
   int num_thread = min(max_num_thread , (int)pool.size());
@@ -222,7 +222,7 @@ void create_q_gram_dict(){
     }
   }
   for(int i = 0;i < num_thread ; ++i)
-    pthread_join(my_thread[i] , NULL);
+    pthread_join(my_thread[i] , NULL); //waiting for threads to complete
 }
 
 int edit_distance(const string &s1, const string &s2){
@@ -251,6 +251,8 @@ string random_string(int length){
     ans[i] = iterable[random_no()%iterable.size()];
   return ans;
 }
+
+//Computes the Hamming distance, which approximates edit distance: counts the number of different chars in each position
 int hamming_distance(int i , int j){
   return (q_gram_dict[i]^q_gram_dict[j]).count();
 }
@@ -269,6 +271,8 @@ int compute_distance(int i , int j , string type){
     assert(0);
   }
 }
+
+//Creates random anchors used for hashing DNA strands
 void create_anchors(string type , vector<vector<string> > &anchors){
   if(DEBUG) assert(type == "global" || type == "local");
   int rows = ((type == "global")? global_num_anchor_lists : local_num_anchor_lists);  
@@ -281,6 +285,8 @@ void create_anchors(string type , vector<vector<string> > &anchors){
     }
   }
 }
+
+//Compute hash_value for a given DNA strand using anchors matrix
 inline string getHashValue(const string &s, const vector<vector<string> > &anchors){
   string hash_value;
   int len = s.size();
@@ -298,6 +304,7 @@ inline string getHashValue(const string &s, const vector<vector<string> > &ancho
   }
   return hash_value;
 }
+
 
 void *global_hashing_thread(void *args){
   pair<int,int> *info = static_cast<pair<int,int> *>(args);
@@ -318,6 +325,8 @@ void *global_hashing_thread(void *args){
   pthread_mutex_unlock(&mutex1);
   pthread_exit(NULL);
 }
+
+
 void global_hashing(){
   if(curr_clusters.size() == 0) return;
   global_paritions.clear();
